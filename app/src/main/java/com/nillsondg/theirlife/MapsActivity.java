@@ -1,10 +1,10 @@
 package com.nillsondg.theirlife;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -16,26 +16,18 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity {
+    private final String LOG_TAG = FetchPanoramioPhotos.class.getSimpleName();
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private LatLng mLatLng;
@@ -52,6 +44,8 @@ public class MapsActivity extends FragmentActivity {
 
     private LatLng mLeftDownLatLng;
     private LatLng mRightUpLatLng;
+
+    private ArrayList<Photo> mPhotosList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +100,33 @@ public class MapsActivity extends FragmentActivity {
         mMapSettings.setCompassEnabled(true);
         mMapSettings.setMyLocationButtonEnabled(true);
         mMapSettings.setZoomControlsEnabled(true);
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(final Marker marker) {
+                LatLng pos = marker.getPosition();
+                if( pos == null )
+                    return false;
+                //TODO ЖОПА
+                Photo need = null;
+                for( Photo photo : mPhotosList ){
+                    if((photo.getCoordinates().longitude == pos.longitude) && (photo.getCoordinates().latitude == pos.latitude)){
+                        Log.w("map", "ok");
+                        need = photo;
+                    }
+                }
+                //ASSHOLE
+                if( need == null) return false;
+                Intent detailIntent = new Intent(MapsActivity.this, DetailActivity.class)
+                        .putExtra("Photo", need);
+                startActivity(detailIntent);
+                //int arrayListPosition = getArrayListPosition(pos);
+
+
+                return true;
+            }
+          }
+
+        );
         mMap.setOnMapLongClickListener(
                 new GoogleMap.OnMapLongClickListener() {
                     @Override
@@ -137,6 +158,7 @@ public class MapsActivity extends FragmentActivity {
 
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         getMyLocation();
+        GetOffset();
         drawMarker();
     }
 
@@ -158,7 +180,7 @@ public class MapsActivity extends FragmentActivity {
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(mLatLng, mZoom);
         mMap.animateCamera(cameraUpdate);
         //markers.add(marker);
-        FetchPanoramioPhotos photosTask = new FetchPanoramioPhotos();
+        FetchPanoramioPhotos photosTask = new FetchPanoramioPhotos(this);
         photosTask.execute(mLeftDownLatLng, mRightUpLatLng);
     }
 
@@ -223,6 +245,7 @@ public class MapsActivity extends FragmentActivity {
     }
 
     void GetOffset(){
+        if(mLatLng == null) return;
         int angle = 45;
         double offset = cRadius * Math.cos(Math.PI/180.0*angle);
         double[] left = CalculateCoordinates(-offset);
@@ -245,142 +268,19 @@ public class MapsActivity extends FragmentActivity {
         return result;
     }
 
-    public class FetchPanoramioPhotos extends AsyncTask<LatLng, Void, ArrayList<Photo>> {
-        private final String LOG_TAG = FetchPanoramioPhotos.class.getSimpleName();
-//        private ArrayAdapter<Photo> mPhotosAdapter;
-//        private Context mContext;
-        public FetchPanoramioPhotos() {
-        //public FetchPanoramioPhotos(Context context, ArrayAdapter<Photo> photoAdapter) {
-//            mContext = context;
-//            mPhotosAdapter = photoAdapter;
-        }
-        @Override
-        protected ArrayList<Photo> doInBackground(LatLng... latLngs) {
-            if(latLngs == null) return null;
-
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
-            String photosJsonStr = null;
-            // http://www.panoramio.com/map/get_panoramas.php?set=public&from=0&to=20&minx=37.78154268761862&miny=55.710612752003875&maxx=37.804096416628475&maxy=55.723316848584766&size=medium&mapfilter=true
-            String size = "medium";
-            String set = "public";
-            int from = 0;
-            int to = 10;
-            double minx = latLngs[0].longitude;
-            double miny = latLngs[0].latitude;
-            double maxx = latLngs[1].longitude;
-            double maxy = latLngs[1].latitude;
-            String mapfilter = "true";
-            try{
-                final String PANORAMIO_BASE_URL = "http://www.panoramio.com/map/get_panoramas.php?";
-                final String SIZE_PARAM = "size";
-                final String SET_PARAM = "set";
-                final String FROM_PARAM = "from";
-                final String TO_PARAM = "to";
-                final String MAPFILTER_PARAM = "mapfilter";
-                final String MINX_PARAM = "minx";
-                final String MINY_PARAM = "miny";
-                final String MAXX_PARAM = "maxx";
-                final String MAXY_PARAM = "maxy";
-                Uri builtUri = Uri.parse(PANORAMIO_BASE_URL).buildUpon()
-                        .appendQueryParameter(SET_PARAM, set)
-                        .appendQueryParameter(FROM_PARAM, Integer.toString(from))
-                        .appendQueryParameter(TO_PARAM, Integer.toString(to))
-                        .appendQueryParameter(MINX_PARAM, Double.toString(minx))
-                        .appendQueryParameter(MINY_PARAM, Double.toString(miny))
-                        .appendQueryParameter(MAXX_PARAM, Double.toString(maxx))
-                        .appendQueryParameter(MAXY_PARAM, Double.toString(maxy))
-                        .appendQueryParameter(SIZE_PARAM, size)
-                        .appendQueryParameter(MAPFILTER_PARAM, mapfilter)
-                        .build();
-
-                URL url = new URL(builtUri.toString());
-                Log.w(LOG_TAG, builtUri.toString());
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    return null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line + "\n");
-                }
-
-                if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                    return null;
-                }
-                photosJsonStr = buffer.toString();
-
-            }catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
-                return null;
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
-                    }
-                }
-            }
-            try {
-                return getPhotosDataFromJson(photosJsonStr);
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, e.getMessage(), e);
-                e.printStackTrace();
-            }
-
-            // This will only happen if there was an error getting or parsing the forecast.
-            return null;
-        }
-
-        private ArrayList<Photo> getPhotosDataFromJson(String photosJsonStr) throws JSONException{
-
-            // These are the names of the JSON objects that need to be extracted.
-            final String PHOTOS = "photos";
-            final String PHOTO_FILE_URL = "photo_file_url";
-            final String LATITUDE = "latitude";
-            final String LONGITUDE = "longitude";
-
-            JSONObject photosJson = new JSONObject(photosJsonStr);
-            ArrayList<Photo> resultPhotos = new ArrayList<>();
-            JSONArray photosArray = photosJson.getJSONArray(PHOTOS);
-            for( int i = 0; i < photosArray.length(); i++ ){
-                JSONObject photo = photosArray.getJSONObject(i);
-                String photo_file_url = photo.getString(PHOTO_FILE_URL);
-                double latitude = photo.getDouble(LATITUDE);
-                double longitude = photo.getDouble(LONGITUDE);
-                resultPhotos.add(new Photo(latitude, longitude, photo_file_url));
-                Log.w(LOG_TAG, resultPhotos.get(i).getLatitude() + " " + resultPhotos.get(i).getLongitude());
-            }
-            return resultPhotos;
-        }
-        @Override
-        protected void onPostExecute(ArrayList<Photo> result) {
-//            if (result != null && mPhotosAdapter != null) {
-//                mPhotosAdapter.clear();
-//                for(ArrayList<Photo> photo : result) {
-//                    mPhotosAdapter.add(photo);
-//                }
-                // New data is back from the server.  Hooray!
-            Log.w(LOG_TAG,"success");
+    public void setPhotosArray(ArrayList<Photo> photos){
+        mPhotosList = photos;
+    }
+    public void drawGeoMarkers(){
+        if( mPhotosList == null) return;
+        for( Photo photo : mPhotosList){
+            LatLng coordinates = photo.getCoordinates();
+            Bitmap icon = photo.getIcon();
+            if(icon != null)
+                mMap.addMarker(new MarkerOptions().position(coordinates).icon(BitmapDescriptorFactory.fromBitmap(icon)));
+            else{
+                mMap.addMarker(new MarkerOptions().position(coordinates).icon(BitmapDescriptorFactory.fromResource(R.mipmap.panoramio_icon)));
             }
         }
+    }
 }
