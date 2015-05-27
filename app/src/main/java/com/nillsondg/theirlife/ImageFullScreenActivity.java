@@ -51,6 +51,7 @@ public class ImageFullScreenActivity extends Activity {
     private SystemUiHider mSystemUiHider;
 
     Photo mPhoto;
+    final int HIDE_TIME = 5000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,7 +144,7 @@ public class ImageFullScreenActivity extends Activity {
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
-        delayedHide(100);
+        delayedHide(HIDE_TIME);
     }
 
 

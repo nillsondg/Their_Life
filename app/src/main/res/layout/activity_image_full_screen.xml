@@ -30,18 +30,12 @@
             tools:ignore="UselessParent">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text=""
                 android:id="@+id/textView2"
                 style="?metaButtonBarButtonStyle"
                 android:layout_weight="1" />
-
-            <Button android:id="@+id/dummy_button" style="?metaButtonBarButtonStyle"
-                android:layout_width="0dp" android:layout_height="wrap_content"
-                android:layout_weight="1" android:text="@string/dummy_button"
-                android:visibility="invisible" />
-
         </LinearLayout>
     </FrameLayout>
 

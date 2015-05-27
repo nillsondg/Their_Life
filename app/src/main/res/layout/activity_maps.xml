@@ -11,13 +11,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
             <Button
-                android:id="@+id/btnTest"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="onClickTest"
-                android:text="@string/test">
-            </Button>
-            <Button
                 android:id="@+id/btnRadiusUp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

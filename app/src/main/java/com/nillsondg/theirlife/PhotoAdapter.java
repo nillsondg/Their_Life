@@ -22,26 +22,22 @@ public class PhotoAdapter extends BaseAdapter {
         this.photos = photos;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
-    // кол-во элементов
     @Override
     public int getCount() {
         return photos.size();
     }
 
-    // элемент по позиции
     @Override
     public Object getItem(int position) {
         return photos.get(position);
     }
 
-    // id по позиции
     @Override
     public long getItemId(int position) {
         return position;
     }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-//        // используем созданные, но не используемые view
         View view = convertView;
 //        if (view == null) {
 //            view = lInflater.inflate(R.layout.item, parent, false);
@@ -49,18 +45,13 @@ public class PhotoAdapter extends BaseAdapter {
 //
 //        Product p = getProduct(position);
 //
-//        // заполняем View в пункте списка данными из товаров: наименование, цена
-//        // и картинка
 //        ((TextView) view.findViewById(R.id.tvDescr)).setText(p.name);
 //        ((TextView) view.findViewById(R.id.tvPrice)).setText(p.price + "");
 //        ((ImageView) view.findViewById(R.id.ivImage)).setImageResource(p.image);
 //
 //        CheckBox cbBuy = (CheckBox) view.findViewById(R.id.cbBox);
-//        // присваиваем чекбоксу обработчик
 //        cbBuy.setOnCheckedChangeListener(myCheckChangList);
-//        // пишем позицию
 //        cbBuy.setTag(position);
-//        // заполняем данными из товаров: в корзине или нет
 //        cbBuy.setChecked(p.box);
         return view;
     }

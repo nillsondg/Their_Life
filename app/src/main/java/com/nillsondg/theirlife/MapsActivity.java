@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity {
-    private final String LOG_TAG = FetchPanoramioPhotos.class.getSimpleName();
+    private final String LOG_TAG = MapsActivity.class.getSimpleName();
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private LatLng mLatLng;
@@ -105,19 +105,18 @@ public class MapsActivity extends FragmentActivity {
         mMarkersHashMap = new HashMap<>();
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(final Marker marker) {
-                PhotoMarker photomarker = mMarkersHashMap.get(marker);
-                if( photomarker == null) return false;
-                Intent detailIntent = new Intent(MapsActivity.this, ImageFullScreenActivity.class)
-                        .putExtra("Photo", photomarker.getPhoto());
-                startActivity(detailIntent);
-                //int arrayListPosition = getArrayListPosition(pos);
-                return true;
-            }
+                                          @Override
+                                          public boolean onMarkerClick(final Marker marker) {
+                                              PhotoMarker photomarker = mMarkersHashMap.get(marker);
+                                              if (photomarker == null) return false;
+                                              Intent detailIntent = new Intent(MapsActivity.this, ImageFullScreenActivity.class)
+                                                      .putExtra("Photo", photomarker.getPhoto());
+                                              startActivity(detailIntent);
+                                              //int arrayListPosition = getArrayListPosition(pos);
+                                              return true;
+                                          }
 
-          }
-
+                                      }
         );
         mMap.setOnMapLongClickListener(
                 new GoogleMap.OnMapLongClickListener() {
@@ -142,6 +141,7 @@ public class MapsActivity extends FragmentActivity {
 //                        MapsActivity.this,
 //                        "coor" + mLatLng.latitude + " " + mLatLng.longitude,
 //                        Toast.LENGTH_SHORT).show();
+                GetOffset();
                 drawMarker();
                 return true;
             }
@@ -185,16 +185,16 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
-    public void onClickTest(View view) {
-        if(mMap.getMapType() != GoogleMap.MAP_TYPE_SATELLITE)
-            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        else
-            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        Toast.makeText(MapsActivity.this, "zoom" + mMap.getCameraPosition().zoom, Toast.LENGTH_SHORT).show();
-    }
+//    public void onClickTest(View view) {
+//        if(mMap.getMapType() != GoogleMap.MAP_TYPE_SATELLITE)
+//            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+//        else
+//            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+//        Toast.makeText(MapsActivity.this, "zoom" + mMap.getCameraPosition().zoom, Toast.LENGTH_SHORT).show();
+//    }
 
     public void onClickRadiusUp(View view){
-        if(cRadius != 1000) {
+        if(cRadius != 2000) {
             cRadius += 100;
             mZoom -= 0.25;
             GetOffset();
