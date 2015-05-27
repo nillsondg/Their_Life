@@ -35,7 +35,8 @@
                 android:text=""
                 android:id="@+id/textView2"
                 style="?metaButtonBarButtonStyle"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:clickable="true" />
         </LinearLayout>
     </FrameLayout>
 

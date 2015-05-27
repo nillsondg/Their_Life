@@ -132,7 +132,16 @@ public class FetchPanoramioPhotos extends AsyncTask<LatLng, Void, ArrayList<Phot
     private ArrayList<Photo> getPhotosDataFromJson(String photosJsonStr) throws JSONException{
 
         // These are the names of the JSON objects that need to be extracted.
+        final String COUNT = "count";
+        final String HAS_MORE = "has_more";
+        final String MAP_LOCATION = "map_location";
+
+        final String LAT = "lat";
+        final String LON = "lon";
+        final String PANORAMIO_ZOOM = "panoramio_zoom";
+
         final String PHOTOS = "photos";
+
         final String PHOTO_FILE_URL = "photo_file_url";
         final String LATITUDE = "latitude";
         final String LONGITUDE = "longitude";
@@ -140,6 +149,13 @@ public class FetchPanoramioPhotos extends AsyncTask<LatLng, Void, ArrayList<Phot
         final String AUTHOR = "owner_name";
         final String PHOTO_URL = "photo_url";
         final String AUTHOR_URL = "owner_url";
+        final String UPLOAD_DATE = "upload_date";
+        final String HEIGHT = "height";
+        final String WIDTH = "width";
+        final String OWNER_ID = "owner_id";
+        final String OWNER_URL = "owner_url";
+        final String PHOTO_ID = "photo_id";
+        final String PLACE_ID = "place_id";
 
         JSONObject photosJson = new JSONObject(photosJsonStr);
         ArrayList<Photo> resultPhotos = new ArrayList<>();
@@ -151,9 +167,13 @@ public class FetchPanoramioPhotos extends AsyncTask<LatLng, Void, ArrayList<Phot
             double longitude = jsonPhoto.getDouble(LONGITUDE);
             String title = jsonPhoto.getString(TITLE);
             String owner_name = jsonPhoto.getString(AUTHOR);
+            String upload_date = jsonPhoto.getString(UPLOAD_DATE);
+            String photo_url = jsonPhoto.getString(PHOTO_URL);
             Photo photo = new Photo(latitude, longitude, photo_file_url);
             photo.setTitle(title);
             photo.setAuthor(owner_name);
+            photo.setDate(upload_date);
+            photo.setPhotoUrl(photo_url);
             resultPhotos.add(photo);
             Log.w(LOG_TAG, resultPhotos.get(i).getLatitude() + " " + resultPhotos.get(i).getLongitude());
         }

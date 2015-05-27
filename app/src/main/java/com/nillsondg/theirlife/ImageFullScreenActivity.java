@@ -3,6 +3,7 @@ package com.nillsondg.theirlife;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -75,7 +76,7 @@ public class ImageFullScreenActivity extends Activity {
         load.execute(mPhoto.getUrl());
 
         TextView text = (TextView)findViewById(R.id.textView2);
-        text.append(mPhoto.getTitle() + " by " + mPhoto.getAuthor());
+        text.append(mPhoto.getTitle() + " by " + mPhoto.getAuthor() + "\n" + mPhoto.getDate());
 
         // Set up an instance of SystemUiHider to control the system UI for
         // this activity.
@@ -135,6 +136,19 @@ public class ImageFullScreenActivity extends Activity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.imageView3).setOnTouchListener(mDelayHideTouchListener);
+        findViewById(R.id.textView2).setOnClickListener(new TextView.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()) {
+                    case R.id.textView2:
+                        String url = mPhoto.getPhotoUrl();
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setData(Uri.parse(url));
+                        startActivity(i);
+                        break;
+                }
+            }
+        });
     }
 
     @Override

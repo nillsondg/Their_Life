@@ -22,6 +22,9 @@ public class Photo implements Serializable {
     private String author;
     private String url;
     private Bitmap icon;
+    private String date;
+    private String photoUrl;
+
     public Photo(double latitude, double longitude, String url){
         this.latitude = latitude;
         this.longitude = longitude;
@@ -64,6 +67,20 @@ public class Photo implements Serializable {
     private void setIcon(Bitmap icon){
         this.icon = icon;
     }
+    public void setDate(String date) {
+        this.date = date;
+    }
+    public String getDate() {
+        return date;
+    }
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+
     private class LoadImage extends AsyncTask<String, String, Bitmap> {
         @Override
         protected void onPreExecute() {
