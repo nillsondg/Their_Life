@@ -2,7 +2,6 @@ package com.nillsondg.theirlife;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -24,6 +23,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity {
@@ -40,12 +40,13 @@ public class MapsActivity extends FragmentActivity {
     int cStrokeWidth = 8;
     private float mZoom = 13.5f;
     private LocationManager mLocationManager;
-    //List<Marker> markers = new ArrayList<Marker>();
+    List<PhotoMarker> markers = new ArrayList<>();
 
     private LatLng mLeftDownLatLng;
     private LatLng mRightUpLatLng;
 
     private ArrayList<Photo> mPhotosList;
+    private HashMap<Marker, PhotoMarker> mMarkersHashMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,30 +101,21 @@ public class MapsActivity extends FragmentActivity {
         mMapSettings.setCompassEnabled(true);
         mMapSettings.setMyLocationButtonEnabled(true);
         mMapSettings.setZoomControlsEnabled(true);
+
+        mMarkersHashMap = new HashMap<>();
+
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker marker) {
-                LatLng pos = marker.getPosition();
-                if( pos == null )
-                    return false;
-                //TODO ЖОПА
-                Photo need = null;
-                for( Photo photo : mPhotosList ){
-                    if((photo.getCoordinates().longitude == pos.longitude) && (photo.getCoordinates().latitude == pos.latitude)){
-                        Log.w("map", "ok");
-                        need = photo;
-                    }
-                }
-                //ASSHOLE
-                if( need == null) return false;
-                Intent detailIntent = new Intent(MapsActivity.this, DetailActivity.class)
-                        .putExtra("Photo", need);
+                PhotoMarker photomarker = mMarkersHashMap.get(marker);
+                if( photomarker == null) return false;
+                Intent detailIntent = new Intent(MapsActivity.this, ImageFullScreenActivity.class)
+                        .putExtra("Photo", photomarker.getPhoto());
                 startActivity(detailIntent);
                 //int arrayListPosition = getArrayListPosition(pos);
-
-
                 return true;
             }
+
           }
 
         );
@@ -131,7 +123,7 @@ public class MapsActivity extends FragmentActivity {
                 new GoogleMap.OnMapLongClickListener() {
                     @Override
                     public void onMapLongClick(LatLng latLng) {
-                        Toast.makeText(MapsActivity.this, "got clicked " + latLng.latitude + " " + latLng.longitude, Toast.LENGTH_SHORT).show(); //do some stuff
+                        //Toast.makeText(MapsActivity.this, "got clicked " + latLng.latitude + " " + latLng.longitude, Toast.LENGTH_SHORT).show(); //do some stuff
                         mLatLng = latLng;
                         GetOffset();
                         drawMarker();
@@ -143,7 +135,7 @@ public class MapsActivity extends FragmentActivity {
             public boolean onMyLocationButtonClick() {
                 Toast.makeText(
                         MapsActivity.this,
-                        "Определяем текущую позицию",
+                        "Определяем текущую геопозицию",
                         Toast.LENGTH_SHORT).show();
                 getMyLocation();
 //                Toast.makeText(
@@ -274,13 +266,16 @@ public class MapsActivity extends FragmentActivity {
     public void drawGeoMarkers(){
         if( mPhotosList == null) return;
         for( Photo photo : mPhotosList){
-            LatLng coordinates = photo.getCoordinates();
-            Bitmap icon = photo.getIcon();
-            if(icon != null)
-                mMap.addMarker(new MarkerOptions().position(coordinates).icon(BitmapDescriptorFactory.fromBitmap(icon)));
-            else{
-                mMap.addMarker(new MarkerOptions().position(coordinates).icon(BitmapDescriptorFactory.fromResource(R.mipmap.panoramio_icon)));
-            }
+            PhotoMarker photoMarker = new PhotoMarker(photo);
+            markers.add(photoMarker);
+            LatLng coordinates = photoMarker.getCoordinates();
+            //Bitmap icon = photo.getIcon();
+            //if(icon != null)
+                //mMap.addMarker(new MarkerOptions().position(coordinates).icon(BitmapDescriptorFactory.fromBitmap(icon)));
+            //else{
+            Marker marker = mMap.addMarker(new MarkerOptions().position(coordinates).icon(BitmapDescriptorFactory.fromResource(R.mipmap.panoramio_icon)));
+            mMarkersHashMap.put(marker, photoMarker);
+            //}
         }
     }
 }

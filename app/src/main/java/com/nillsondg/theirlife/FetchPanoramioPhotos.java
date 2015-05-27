@@ -41,7 +41,7 @@ public class FetchPanoramioPhotos extends AsyncTask<LatLng, Void, ArrayList<Phot
 
         String photosJsonStr = null;
         // http://www.panoramio.com/map/get_panoramas.php?set=public&from=0&to=20&minx=37.78154268761862&miny=55.710612752003875&maxx=37.804096416628475&maxy=55.723316848584766&size=medium&mapfilter=true
-        String size = "original";
+        String size = "medium";
         String set = "public";
         int from = 0;
         int to = 10;

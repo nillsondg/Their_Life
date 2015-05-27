@@ -29,7 +29,7 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" >
-            <intent-filter>
+            <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -45,10 +45,20 @@
         </activity>
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings">
+            android:label="@string/title_activity_settings" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nillsondg.theirlife.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ImageFullScreenActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_image_full_screen"
+            android:theme="@style/FullscreenTheme" >
+        </activity>
+        <activity
+            android:name=".ImageFullScreenActivity2"
+            android:label="@string/title_activity_image_full_screen" >
         </activity>
     </application>
 

@@ -5,26 +5,18 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-
-public class DetailActivity extends ActionBarActivity{
-    private final String LOG_TAG = DetailActivity.class.getSimpleName();
+public class ImageFullScreenActivity2 extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new DetailActivityFragment())
-                    .commit();
-        }
+        setContentView(R.layout.activity_image_full_screen2);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_detail, menu);
+        getMenuInflater().inflate(R.menu.menu_image_full_screen, menu);
         return true;
     }
 
@@ -42,6 +34,4 @@ public class DetailActivity extends ActionBarActivity{
 
         return super.onOptionsItemSelected(item);
     }
-
-
 }
