@@ -1,20 +1,16 @@
 package com.nillsondg.theirlife;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.io.InputStream;
 import java.io.Serializable;
-import java.net.URL;
 
 /**
  * Created by Dmitry on 19.05.2015.
  */
 public class Photo implements Serializable {
-    private final String LOG_TAG = FetchPanoramioPhotos.class.getSimpleName();
+    private final String LOG_TAG = Photo.class.getSimpleName();
 
     private double latitude;
     private double longitude;
@@ -81,33 +77,33 @@ public class Photo implements Serializable {
         this.photoUrl = photoUrl;
     }
 
-    private class LoadImage extends AsyncTask<String, String, Bitmap> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-//            pDialog = new ProgressDialog(MainActivity.this);
-//            pDialog.setMessage("Loading Image ....");
-//            pDialog.show();
-
-        }
-        protected Bitmap doInBackground(String... args) {
-            try {
-                URL url = new URL(args[0].replace("medium", "square"));
-                Bitmap bitmap = BitmapFactory.decodeStream((InputStream)url.getContent());
-                return bitmap;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        protected void onPostExecute(Bitmap image) {
-
-            if(image != null){
-                setIcon(image);
-            }else{
-                //Toast.makeText(MainActivity.this, "Image Does Not exist or Network Error", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+//    private class LoadImage extends AsyncTask<String, String, Bitmap> {
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+////            pDialog = new ProgressDialog(MainActivity.this);
+////            pDialog.setMessage("Loading Image ....");
+////            pDialog.show();
+//
+//        }
+//        protected Bitmap doInBackground(String... args) {
+//            try {
+//                URL url = new URL(args[0].replace("medium", "square"));
+//                Bitmap bitmap = BitmapFactory.decodeStream((InputStream)url.getContent());
+//                return bitmap;
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                return null;
+//            }
+//        }
+//
+//        protected void onPostExecute(Bitmap image) {
+//
+//            if(image != null){
+//                setIcon(image);
+//            }else{
+//                //Toast.makeText(MainActivity.this, "Image Does Not exist or Network Error", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
 }
