@@ -99,17 +99,11 @@ public class MapsActivity extends FragmentActivity {
                                           @Override
                                           public boolean onMarkerClick(final Marker marker) {
                                               Photo photo = mMarkersHashMap.get(marker);
-                                              WikiArticle wikiArticle = mMarkersHashMap2.get(marker);
-                                              if (photo == null && wikiArticle == null)
+                                              if (photo == null)
                                                   return false;
                                               Intent detailIntent;
-                                              if (photo != null) {
-                                                  detailIntent = new Intent(MapsActivity.this, ImageFullScreenActivity.class)
-                                                          .putExtra("Photo", photo);
-                                              } else {
-                                                  detailIntent = new Intent(Intent.ACTION_VIEW)
-                                                          .setData(wikiArticle.getArticleUrl());
-                                              }
+                                              detailIntent = new Intent(MapsActivity.this, ImageFullScreenActivity.class)
+                                                      .putExtra("Photo", photo);
                                               startActivity(detailIntent);
                                               return true;
                                           }
@@ -137,6 +131,18 @@ public class MapsActivity extends FragmentActivity {
                 return true;
             }
         });
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                WikiArticle wikiArticle = mMarkersHashMap2.get(marker);
+                Intent detailIntent;
+                if (wikiArticle != null){
+                    detailIntent = new Intent(Intent.ACTION_VIEW)
+                            .setData(wikiArticle.getArticleUrl());
+                    Log.w(LOG_TAG, wikiArticle.getArticleUrl().toString());
+                    startActivity(detailIntent);
+                }
+            }});
     }
 
     @Override
@@ -149,10 +155,12 @@ public class MapsActivity extends FragmentActivity {
         if(mMarker == null) return;
         mMap.clear();
         mMarker.drawMarker();
+        mWikiArticlesList = null;
         FetchWikiArticles wikiArticlesTask = new FetchWikiArticles(this);
         wikiArticlesTask.execute(mMarker);
-//        FetchPanoramioPhotos photosTask = new FetchPanoramioPhotos(this);
-//        photosTask.execute(mMarker.getSquareCoordinates());
+        mPhotosList = null;
+        FetchPanoramioPhotos photosTask = new FetchPanoramioPhotos(this);
+        photosTask.execute(mMarker.getSquareCoordinates());
     }
 
     @Override
@@ -182,9 +190,10 @@ public class MapsActivity extends FragmentActivity {
         if(f) drawMarker();
     }
 
-    public void setPhotosArray(ArrayList<Photo> photos){
+    public void setPhotosArray(ArrayList<Photo> photos) {
         mPhotosList = photos;
     }
+
     public void setWikiArticlesArray(ArrayList<WikiArticle> wikiArticles){
         mWikiArticlesList = wikiArticles;
     }
@@ -197,9 +206,8 @@ public class MapsActivity extends FragmentActivity {
             }
         if(mWikiArticlesList == null) return;
         for(WikiArticle wikiArticle : mWikiArticlesList){
-            Log.w(LOG_TAG, "wiki articles ok");
             LatLng coordinates = wikiArticle.getCoordinates();
-            Marker marker = mMap.addMarker(new MarkerOptions().position(coordinates).icon(BitmapDescriptorFactory.fromResource(R.mipmap.wikipedia_icon)));
+            Marker marker = mMap.addMarker(new MarkerOptions().position(coordinates).icon(BitmapDescriptorFactory.fromResource(R.mipmap.wikipedia_icon)).title(wikiArticle.getTitle()));
             mMarkersHashMap2.put(marker, wikiArticle);
         }
     }

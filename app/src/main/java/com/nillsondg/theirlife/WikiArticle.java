@@ -60,6 +60,6 @@ public class WikiArticle {
         final String PROTOCOL = "https";
         final String LANGUAGE = "ru";
         final String SYTE = "wikipedia.org/wiki/";
-        articleUrl = PROTOCOL + "://" + LANGUAGE + "." + SYTE + "/" + title;
+        articleUrl = PROTOCOL + "://" + LANGUAGE + "." + SYTE + title;
     }
 }

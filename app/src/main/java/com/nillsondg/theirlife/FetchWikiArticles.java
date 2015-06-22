@@ -16,6 +16,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import javax.net.ssl.HttpsURLConnection;
+
 /**
  * Created by Dmitry on 22.06.2015.
  */
@@ -40,10 +42,10 @@ public class FetchWikiArticles extends AsyncTask<LocationMarker, Void, ArrayList
         String list = "geosearch";
         double gsradius = marker[0].getRadius();
         String gscoord = marker[0].getCoordinates().latitude + "|" + marker[0].getCoordinates().longitude;
-        int gslimit = 10;
+        int gslimit = 20;
         String format = "json";
         try{
-            final String WIKI_BASE_URL = "http://" + language + ".wikipedia.org/w/api.php?";
+            final String WIKI_BASE_URL = "https://" + language + ".wikipedia.org/w/api.php?";
             final String ACTION_PARAM = "action";
             final String LIST_PARAM = "list";
             final String GSRADIUS_PARAM = "gsradius";
@@ -61,7 +63,7 @@ public class FetchWikiArticles extends AsyncTask<LocationMarker, Void, ArrayList
 
             URL url = new URL(builtUri.toString());
             Log.w(LOG_TAG, builtUri.toString());
-            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection = (HttpsURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
 
@@ -86,7 +88,6 @@ public class FetchWikiArticles extends AsyncTask<LocationMarker, Void, ArrayList
                 return null;
             }
             wikiArticlesJsonStr = buffer.toString();
-            Log.w(LOG_TAG, wikiArticlesJsonStr);
         }catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attemping
@@ -131,11 +132,10 @@ public class FetchWikiArticles extends AsyncTask<LocationMarker, Void, ArrayList
         JSONObject wikiArticlesJson = new JSONObject(wikiArticlesJsonStr);
         JSONObject queryJson = wikiArticlesJson.getJSONObject(QUERY);
         JSONArray wikiArticlesArray = queryJson.getJSONArray(GEOSEARCH);
-        for( int i = 0; i < wikiArticlesArray.length(); i++ ){
+        for(int i = 0; i < wikiArticlesArray.length(); i++){
             JSONObject wikiArticleJson = wikiArticlesArray.getJSONObject(i);
             //String page_id = wikiArticleJson.getString(PAGE_ID);
             double latitude = wikiArticleJson.getDouble(LAT);
-            Log.w(LOG_TAG, Double.toString(latitude));
             double longitude = wikiArticleJson.getDouble(LON);
             String title = wikiArticleJson.getString(TITLE);
             WikiArticle wikiArticle = new WikiArticle(latitude, longitude);
